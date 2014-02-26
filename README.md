@@ -1,4 +1,4 @@
-foundation
+Foundation
 ==========
 
-It's just a library with a plugin framework included and  lot of other stuff
+The extra things for the python standard library you always want to have!
