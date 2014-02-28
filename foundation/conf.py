@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 import platform
 version =  platform.python_version_tuple()
-if version[1] == 7:
+if version[1] == '6':
     import json
 else:
     import simplejson as json

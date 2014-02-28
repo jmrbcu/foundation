@@ -14,7 +14,7 @@ import inspect
 import platform
 version = platform.python_version_tuple()
 
-if version[1] == 6:
+if version[1] == '6':
     from weakrefset import WeakSet, WeakKeyDictionary
 else:
     from weakref import WeakSet, WeakKeyDictionary

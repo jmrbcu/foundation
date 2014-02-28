@@ -5,7 +5,7 @@ import logging
 import platform
 
 version = platform.python_version_tuple()
-if version[1] == 6:
+if version[1] == '6':
     class NullHandler(logging.Handler):
         def emit(self, record):
             pass
