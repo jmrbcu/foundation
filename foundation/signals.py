@@ -14,10 +14,11 @@ import inspect
 import platform
 version = platform.python_version_tuple()
 
+from weakref import WeakSet, WeakKeyDictionary
 if version[1] == '6':
-    from weakrefset import WeakSet, WeakKeyDictionary
+    from weakrefset import WeakSet
 else:
-    from weakref import WeakSet, WeakKeyDictionary
+    from weakref import WeakSet
 
 
 class Signal(object):
