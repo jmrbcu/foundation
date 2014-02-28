@@ -1,7 +1,13 @@
 # python imports
 import os
-import json
 from collections import OrderedDict
+
+import platform
+version =  platform.python_version_tuple()
+if version[1] == 7:
+    import json
+else:
+    import simplejson as json
 
 
 class ConfigError(Exception):

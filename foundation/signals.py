@@ -11,7 +11,13 @@ License: MIT
 """
 from __future__ import print_function
 import inspect
-from weakref import WeakSet, WeakKeyDictionary
+import platform
+version = platform.python_version_tuple()
+
+if version[1] == 6:
+    from weakrefset import WeakSet, WeakKeyDictionary
+else:
+    from weakref import WeakSet, WeakKeyDictionary
 
 
 class Signal(object):
