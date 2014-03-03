@@ -82,6 +82,7 @@ def get_nice_size(n_bytes):
         if s < 1024 ** (i + 1) or i == 8][0]
     return nice_size(n_bytes)
 
+
 class ExecutionTime(object):
     """
     Helper that can be used in with statements to have a simple
