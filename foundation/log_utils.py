@@ -4,13 +4,13 @@ import sys
 import logging
 import platform
 
-version = platform.python_version_tuple()
-if version[1] == '6':
+try:
+    from logging import NullHandler
+except ImportError:
     class NullHandler(logging.Handler):
         def emit(self, record):
             pass
-else:
-    from logging import NullHandler
+
 
 def setup_root_logger(level=logging.DEBUG, formatter=None, log_file=None,
                 log_size=5242880, log_count=5):

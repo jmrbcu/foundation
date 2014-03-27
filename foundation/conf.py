@@ -1,13 +1,11 @@
 # python imports
 import os
-from collections import OrderedDict
+import json
 
-import platform
-version =  platform.python_version_tuple()
-if version[1] == '6':
-    import simplejson as json
-else:
-    import json
+try:
+    from collections import OrderedDict
+except ImportError:
+    from .legacy.ordereddict import OrderedDict
 
 
 class ConfigError(Exception):
@@ -25,6 +23,7 @@ class SimpleSettings(OrderedDict):
         """
         super(SimpleSettings, self).__init__(*args, **kwargs)
         self.indent = 4
+        self.file_name = None
 
         # update settings with items from file_name
         self.update_from_file(file_name)
@@ -52,12 +51,20 @@ class SimpleSettings(OrderedDict):
         :param file_name: path to the config file.
         :type file_name: str
         """
+        import platform
+        version = platform.python_version_tuple()
+
         self.file_name = os.path.abspath(file_name)
         if os.path.exists(self.file_name):
             with open(self.file_name) as config:
-                config_items = json.load(
-                    config, object_pairs_hook=self._sort_values
-                )
+                if version[0] == '2' and version[1] == '6':
+                    config_items = json.load(
+                        config, object_hook=self._sort_values
+                    )
+                else:
+                    config_items = json.load(
+                        config, object_pairs_hook=self._sort_values
+                    )
                 self.update(config_items)
 
     def load_from_file(self, file_name):

@@ -1,6 +1,4 @@
 # python imports
-import copy
-from collections import OrderedDict
 from cStringIO import StringIO
 
 
