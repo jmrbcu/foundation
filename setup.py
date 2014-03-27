@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='foundation',
     version='1.0',
-    packages=['foundation'],
+    packages=['foundation', 'foundation.legacy'],
     url='https://github.com/jmrbcu/foundation',
     license='GPL2',
     author='Jose Rodriguez Bacallao',
