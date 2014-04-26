@@ -24,6 +24,7 @@ class Tailer(object):
         self.start_pos = self.file.tell()
         if end:
             self.seek_end()
+        self._stop = False
 
     def splitlines(self, data):
         return re.split('|'.join(self.line_terminators), data)
@@ -164,7 +165,7 @@ class Tailer(object):
         """
         trailing = True
 
-        while 1:
+        while not self.stop:
             where = self.file.tell()
             line = self.file.readline()
             if line:
@@ -188,6 +189,9 @@ class Tailer(object):
                 trailing = True
                 self.seek(where)
                 time.sleep(delay)
+
+    def unfollow(self):
+        self._stop = True
 
     def __iter__(self):
         return self.follow()
