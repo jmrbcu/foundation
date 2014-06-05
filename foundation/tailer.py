@@ -164,7 +164,6 @@ class Tailer(object):
         Based on: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/157035
         """
         trailing = True
-
         while not self._stop:
             where = self.file.tell()
             line = self.file.readline()
