@@ -75,8 +75,10 @@ class SimpleSettings(OrderedDict):
                             config, object_pairs_hook=self._sort_values
                         )
                     self.update(config_items)
-                except ValueError:
-                    logger.error('Error reading configuration file')
+                except ValueError as e:
+                    msg = 'Error reading configuration file: {0}'
+                    logger.error(msg.format(e))
+                    logger.error('Loading default configuration values')
 
     def _sort_values(self, pairs):
         return OrderedDict(pairs)
