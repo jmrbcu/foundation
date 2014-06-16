@@ -1,11 +1,14 @@
 # python imports
 import os
 import json
+import logging
 
 try:
     from collections import OrderedDict
 except ImportError:
     from .legacy.ordereddict import OrderedDict
+
+logger = logging.getLogger(__file__)
 
 
 class ConfigError(Exception):
@@ -23,14 +26,20 @@ class SimpleSettings(OrderedDict):
         """
         super(SimpleSettings, self).__init__(*args, **kwargs)
         self.indent = 4
-        self.file_name = None
+        self.file_name = file_name
 
-        # update settings with items from file_name
-        self.update_from_file(file_name)
+    def load(self):
+        """Load settings from "file_name" and merge with
+        the current config.
+
+        :param file_name: path to the config file.
+        :type file_name: str
+        """
+        self.clear()
+        self.update_from_file(self.file_name)
 
     def save(self):
         """save_settings_for the current config in the actual config file."""
-
         with open(self.file_name, 'w') as config:
             json.dump(self, config, indent=self.indent)
 
@@ -40,7 +49,6 @@ class SimpleSettings(OrderedDict):
         :param file_name: path to the new config file.
         :type file_name: str
         """
-
         self.file_name = file_name
         self.save_settings_for()
 
@@ -57,25 +65,18 @@ class SimpleSettings(OrderedDict):
         self.file_name = os.path.abspath(file_name)
         if os.path.exists(self.file_name):
             with open(self.file_name) as config:
-                if version[0] == '2' and version[1] == '6':
-                    config_items = json.load(
-                        config, object_hook=self._sort_values
-                    )
-                else:
-                    config_items = json.load(
-                        config, object_pairs_hook=self._sort_values
-                    )
-                self.update(config_items)
-
-    def load_from_file(self, file_name):
-        """Load settings from "file_name" and merge with
-        the current config.
-
-        :param file_name: path to the config file.
-        :type file_name: str
-        """
-        self.clear()
-        self.update_from_file(file_name)
+                try:
+                    if version[0] == '2' and version[1] == '6':
+                        config_items = json.load(
+                            config, object_hook=self._sort_values
+                        )
+                    else:
+                        config_items = json.load(
+                            config, object_pairs_hook=self._sort_values
+                        )
+                    self.update(config_items)
+                except ValueError:
+                    logger.error('Error reading configuration file')
 
     def _sort_values(self, pairs):
         return OrderedDict(pairs)
