@@ -65,20 +65,15 @@ class SimpleSettings(OrderedDict):
         self.file_name = os.path.abspath(file_name)
         if os.path.exists(self.file_name):
             with open(self.file_name) as config:
-                try:
-                    if version[0] == '2' and version[1] == '6':
-                        config_items = json.load(
-                            config, object_hook=self._sort_values
-                        )
-                    else:
-                        config_items = json.load(
-                            config, object_pairs_hook=self._sort_values
-                        )
-                    self.update(config_items)
-                except ValueError as e:
-                    msg = 'Error reading configuration file: {0}'
-                    logger.error(msg.format(e))
-                    logger.error('Loading default configuration values')
+                if version[0] == '2' and version[1] == '6':
+                    config_items = json.load(
+                        config, object_hook=self._sort_values
+                    )
+                else:
+                    config_items = json.load(
+                        config, object_pairs_hook=self._sort_values
+                    )
+                self.update(config_items)
 
     def _sort_values(self, pairs):
         return OrderedDict(pairs)
