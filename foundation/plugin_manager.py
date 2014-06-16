@@ -150,6 +150,9 @@ class Plugin(object):
                 extension_point = contributor._extension_point
                 extension_points[extension_point].append(contributor)
 
+    def configure(self):
+        pass
+
     def enable(self):
         """Called by the plugin manager to enable the plugin. Subclasses must
         redefine this method to do real work, for example, this is a good
@@ -281,6 +284,7 @@ class PluginManager(object):
                         logger.info('found plugin: {id}'.format(id=plugin.id))
                         self._plugins.setdefault(plugin.id, plugin)
                         plugin.register_extension_points()
+                        plugin.configure()
                     else:
                         logger.info('plugin: {id} disabled'.format(id=plugin.id))
                         self.disabled_plugins.setdefault(plugin.id, plugin)

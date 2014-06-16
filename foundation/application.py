@@ -67,10 +67,7 @@ class Application(object):
         # load settings
         settings_file = path(self.home_dir).join(self.name.lower() + '.conf')
         self.settings = SimpleSettings(settings_file)
-
-        # load state
-        state_file = path(self.home_dir).join('state')
-        self.state = SimpleSettings(state_file)
+        self.settings.load()
 
         # setup root logger
         self.log_dir = path(self.home_dir).join('logs')
@@ -95,13 +92,25 @@ class Application(object):
         PluginManager.register_extension_point(Application.arguments)
         self.plugin_manager = PluginManager(dirs)
 
-    def start(self):
-        """Start the application"""
-
         # parse the arguments
         for argument in self.arguments:
             self.option_parser.add_argument(*argument.args, **argument.kwargs)
+
+        help = 'Generate default configuration file based on plugins options'
+        self.option_parser.add_argument(
+            '-g', '--generate_config', action='store_true', help=help
+        )
         self.options = self.option_parser.parse_args()
+
+    def start(self):
+        """Start the application"""
+
+        # check command line options
+        if self.options.generate_config:
+            msg = 'Generating default config file based on enabled plugins'
+            logger.info(msg)
+            self.generate_default_config()
+            return
 
         logger.info('starting application: %s', self.name)
         try:
@@ -121,15 +130,15 @@ class Application(object):
         finally:
             logger.info('System exit requested')
             self.about_to_quit()
-
-            # save settings and state
-            logger.info('settings saved')
-            self.settings.save()
-
-            logger.info('state saved')
-            self.state.save()
-
             logger.info('stopping application: %s', self.name)
+
+    def generate_default_config(self):
+        settings_file = path(self.home_dir).join(self.name.lower() + '.conf')
+        self.settings = SimpleSettings(settings_file)
+        self.settings.load()
+        for plugin in self.plugin_manager.plugins:
+            plugin.configure()
+        self.settings.save()
 
     def get_service(self, id):
         return self.plugin_manager.get_service(id)
