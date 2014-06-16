@@ -51,6 +51,9 @@ class Application(object):
         self.name = name
         self.version = version
 
+        # setup basic logging configuration
+        logging.basicConfig(level=logging.DEBUG)
+
         # setup application command line parser
         desc = self.name.capitalize() + ' v' + self.version + ' application help'
         self.option_parser = argparse.ArgumentParser(description=desc)
@@ -70,6 +73,7 @@ class Application(object):
         self.settings.load()
 
         # setup root logger
+        logging.root.removeHandler(logging.root.handlers[0])
         self.log_dir = path(self.home_dir).join('logs')
         if not self.log_dir.exists():
             self.log_dir.makedirs()
