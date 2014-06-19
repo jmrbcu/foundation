@@ -61,11 +61,13 @@ class Application(object):
 
         # create application root and home directories
         self.root_dir = path(get_root_dir())
+        sys.path.insert(0, self.root_dir)
         self.home_dir = path(get_app_home(self.name))
         if not self.home_dir.exists():
-            self.home_dir.makedirs()
-
-        sys.path.insert(0, self.root_dir)
+            try:
+                self.home_dir.makedirs()
+            except Exception as e:
+                logger.error(e)
 
         # load settings
         settings_file = path(self.home_dir).join(self.name.lower() + '.conf')
