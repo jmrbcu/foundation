@@ -284,16 +284,15 @@ class PluginManager(object):
                         logger.info('found plugin: {id}'.format(id=plugin.id))
                         self._plugins.setdefault(plugin.id, plugin)
                         plugin.register_extension_points()
-                        plugin.configure()
                     else:
                         logger.info('plugin: {id} disabled'.format(id=plugin.id))
                         self.disabled_plugins.setdefault(plugin.id, plugin)
 
-        # HACK: this is a hack to remove enabled plugins
-        # that have missing dependencies. Rethink again!!!
+        # Remove enabled plugins that have missing dependencies,
+        # also, configure the plugins using the right order.
         try:
             for plugin in self.plugins:
-                pass
+                plugin.configure()
         except PluginError:
             msg = 'disabling plugin: {id} due to missing dependencies'
             logger.error(msg.format(id=plugin.id))
