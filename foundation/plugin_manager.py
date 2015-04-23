@@ -288,19 +288,15 @@ class PluginManager(object):
                         logger.info('plugin: {id} disabled'.format(id=plugin.id))
                         self.disabled_plugins.setdefault(plugin.id, plugin)
 
-        # Remove enabled plugins that have missing dependencies,
-        # also, configure the plugins using the right order.
+        # Register all extension points contributors and configure the plugins in the right order.
+        # This make sure that when we call Plugin.configure, all the contributions up to this point
+        # are already there so you can use the extension points.
         try:
             for plugin in self.plugins:
+                plugin.register_contributors()
                 plugin.configure()
-        except PluginError:
-            msg = 'disabling plugin: {id} due to missing dependencies'
-            logger.error(msg.format(id=plugin.id))
-            self.disabled_plugins[plugin.id] = self._plugins.pop(plugin.id)
-
-        # register all extension points contributors
-        for plugin in self.plugins:
-            plugin.register_contributors()
+        except PluginError as e:
+            logger.error(e.message)
 
     def enable_plugins(self, notify=None):
         """"Enable all discovered plugins. The enabling order is based on
