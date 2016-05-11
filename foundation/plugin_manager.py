@@ -3,8 +3,9 @@ import os
 import sys
 import logging
 import inspect
+from collections import Iterable
 
-# iat imports
+# foundation imports
 from .import_manager import ImportManager
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ def contributes_to(id):
     return wrapper
 
 
-class ExtensionPoint(object):
+class ExtensionPoint(Iterable):
     """An extension point is a place where plugins can contribute extensions
     by declaring methods as contributors to it. Extension points must have
     an unique id.
@@ -39,6 +40,9 @@ class ExtensionPoint(object):
     def __init__(self, id):
         """Initialize the extension point with an unique id"""
         self.id = id
+
+    def __iter__(self):
+        return self
 
     def __get__(self, instance, owner):
         """lazy get all contributed extensions."""
