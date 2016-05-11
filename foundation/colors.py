@@ -1,60 +1,69 @@
+# -*- coding: utf-8 -*-
+"""
+Functions for wrapping strings in ANSI color codes. Imported from fabric api
+and added few colors myself
 
-GRAY = '\033[{0};30m'
-RED = '\033[{0};31m'
-GREEN = '\033[{0};32m'
-YELLOW = '\033[{0};33m'
-BLUE = '\033[{0};34m'
-MAGENTA = '\033[{0};35m'
-CYAN = '\033[{0};36m'
-WHITE = '\033[{0};37m'
-LIGHTGRAY = '\033[{0};90m'
-LIGHTRED = '\033[{0};91m'
-LIGHTGREEN = '\033[{0};92m'
-LIGHTYELLOW = '\033[{0};93m'
-LIGHTBLUE = '\033[{0};94m'
-LIGHTMAGENTA = '\033[{0};95m'
-LIGHTCYAN = '\033[{0};96m'
-LIGHTWHITE = '\033[{0};97m'
-ENDC = '\033[0m'
+Each function within this module returns the input string ``text``, wrapped
+with ANSI color codes for the appropriate color.
+
+For example, to print some text as green on supporting terminals::
+
+    from colors import green
+    print green("This text is green!")
+
+Because these functions simply return modified strings, you can nest them::
+
+    from colors import red, green
+    print red("This sentence is red, except for " + green("these words, which are green") + ".")
+
+If ``bold`` is set to ``True``, the ANSI flag for bolding will be flipped on
+for that particular invocation, which usually shows up as a bold or brighter
+version of the original color on most terminals.
+"""
 
 
-def echo(text, color=None, bold=True, printit=True):
-    endc = ENDC
-    color = color.format(1) if bold and color is not None else color.format(0)
-    if color is None:
-        color, endc = '', ''
+def _wrap_with(code):
+    def inner(text, bold=False):
+        c = code
+        if bold:
+            c = "1;%s" % c
+        return "\033[%sm%s\033[0m" % (c, text)
+    return inner
 
-    if printit:
-        print '{0}{1}{2}'.format(color, text, endc)
-    else:
-        return '{0}{1}{2}'.format(color, text, endc)
+gray = _wrap_with('30')
+red = _wrap_with('31')
+green = _wrap_with('32')
+yellow = _wrap_with('33')
+blue = _wrap_with('34')
+magenta = _wrap_with('35')
+cyan = _wrap_with('36')
+white = _wrap_with('37')
+
+light_gray = _wrap_with('30')
+light_red = _wrap_with('31')
+light_green = _wrap_with('32')
+light_yellow = _wrap_with('33')
+light_blue = _wrap_with('34')
+light_magenta = _wrap_with('35')
+light_cyan = _wrap_with('36')
+light_white = _wrap_with('37')
 
 
 if __name__ == '__main__':
-    color_list = (
-        GRAY,
-        RED,
-        GREEN,
-        YELLOW,
-        BLUE,
-        MAGENTA,
-        CYAN,
-        WHITE,
-        LIGHTGRAY,
-        LIGHTRED,
-        LIGHTGREEN,
-        LIGHTYELLOW,
-        LIGHTBLUE,
-        LIGHTMAGENTA,
-        LIGHTCYAN,
-        LIGHTWHITE,
+    COLORS = (
+        ('gray', gray), ('red', red), ('green', green), ('yellow', yellow), ('blue', blue),
+        ('magenta', magenta), ('cyan', cyan), ('white', white), ('light_gray', light_gray),
+        ('light_red', light_red), ('light_green', light_green), ('light_yellow', light_yellow),
+        ('light_blue', light_blue), ('light_magenta', light_magenta), ('light_cyan', light_cyan),
+        ('light_white', light_white),
     )
 
-    print 'Non bold colors'
-    for color in color_list:
-        echo('COLOR TEST', color, bold=False)
+    print 'COLORS:'
+    for name, color in COLORS:
+        print color('This is a sentence in {0}'.format(' '.join(name.split('_'))))
 
     print
-    print 'Bold colors'
-    for color in color_list:
-        echo('COLOR TEST', color, bold=True)
+    print 'BOLD COLORS:'
+    for name, color in COLORS:
+        print color('This is a sentence in {0}'.format(' '.join(name.split('_'))), True)
+
